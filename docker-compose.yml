@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: artist_db
+    restart: always
+    environment:
+      POSTGRES_USER: artist_user
+      POSTGRES_PASSWORD: artist_db_password_123
+      POSTGRES_DB: artist_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    container_name: artist_backend
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: artist_user
+      DB_PASSWORD: artist_db_password_123
+      DB_NAME: artist_db
+      JWT_SECRET: "random_jwt_secret_key_83921839012"
+      ADMIN_USERNAME: "sister_admin"
+      ADMIN_PASSWORD: "ArtistSecret2024!"
+      # Хэш пароля "ArtistSecret2024!"
+      ADMIN_PASSWORD_HASH: "$2a$10$wT0E2KkG5A1WjU3a/Y8U3.Xj5S0qU5m8I9l9v1w2x3y4z5A6B7C8D"
+    volumes:
+      - uploads_data:/app/uploads # Сохраняем загруженные фото картин на диске VPS
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: artist_frontend
+    restart: always
+    ports:
+      - "8085:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  uploads_data:

@@ -1,0 +1,241 @@
+/* Подключаем бесплатные свободные шрифты Cormorant Garamond и Montserrat с кириллицей */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600&display=swap');
+
+:root {
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Montserrat', -apple-system, sans-serif;
+  
+  --primary: #1a202c;
+  --accent: #c5a059; /* Тёплый арт-золотой акцент */
+  --bg-light: #fafafa;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text: #2d3748;
+  --text-muted: #718096;
+  --danger: #e53e3e;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-light);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Все заголовки делаем утонченным шрифтом Cormorant Garamond */
+h1, h2, h3, h4, .brand-logo {
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+
+/* Красивое оформление бренда в шапке */
+.brand-logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  font-style: italic;
+}
+
+.brand-logo span {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Кнопки */
+.btn {
+  font-family: var(--font-body);
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: #f1f5f9;
+}
+
+.btn-danger {
+  background-color: #fff5f5;
+  color: var(--danger);
+  border: 1px solid #feb2b2;
+}
+
+.btn-danger:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+/* Формы */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.form-control {
+  font-family: var(--font-body);
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* ==========================================
+   АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+   ========================================== */
+
+/* Переделываем логотип, чтобы он не разрывался */
+.brand-logo {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.brand-logo .name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--primary);
+}
+
+.brand-logo .sub {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-top: 2px;
+}
+
+/* Мобильный горизонтальный скролл для фильтров */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 5px 0 15px 0;
+  margin-bottom: 25px;
+  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+  scrollbar-width: none; /* Скрываем скроллбар в Firefox */
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none; /* Скрываем скроллбар в Chrome/Safari */
+}
+
+.filter-btn {
+  white-space: nowrap; /* Запрещаем перенос текста внутри кнопок */
+  flex-shrink: 0;      /* Не сжимаем кнопки */
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+/* Медиа-запрос для экранов шире 600px (планшеты и ПК) */
+@media (min-width: 600px) {
+  .brand-logo {
+    flex-direction: row;
+    align-items: baseline;
+  }
+  .brand-logo .sub {
+    margin-left: 8px;
+    margin-top: 0;
+    font-size: 0.85rem;
+  }
+  .filter-bar {
+    justify-content: center;
+    overflow-x: visible;
+  }
+}
+
+/* Медиа-запрос строго для мобилок (до 599px) */
+@media (max-width: 599px) {
+  header {
+    padding: 12px 0;
+  }
+  
+  header .container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  nav a {
+    margin-left: 12px !important;
+    font-size: 0.85rem;
+  }
+
+  .gallery-header h2 {
+    font-size: 1.8rem !important;
+  }
+
+  .gallery-header .subtitle {
+    font-size: 0.85rem !important;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr; /* Ровно 1 карточка на всю ширину экрана */
+    gap: 20px;
+  }
+}
