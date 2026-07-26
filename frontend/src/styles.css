@@ -239,3 +239,57 @@ h1, h2, h3, h4, .brand-logo {
     gap: 20px;
   }
 }
+
+/* === ПОДВАЛ (FOOTER) === */
+.site-footer {
+  background-color: var(--primary);
+  color: #e2e8f0;
+  padding: 35px 0;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+}
+
+.footer-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.footer-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #a0aec0;
+}
+
+.footer-copy {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 15px;
+  width: 100%;
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+@media (min-width: 640px) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+  .footer-copy {
+    width: auto;
+    border-top: none;
+    padding-top: 0;
+  }
+}

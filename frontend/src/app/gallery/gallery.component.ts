@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -24,13 +24,11 @@ interface Artwork {
   template: `
     <div class="container">
       
-      <!-- Заголовок галереи -->
       <div class="gallery-header">
         <h2>Коллекция работ</h2>
         <p class="subtitle">Авторские живописные произведения и эстампы</p>
       </div>
 
-      <!-- КНОПКИ ФИЛЬТРАЦИИ -->
       <div class="filter-bar">
         <button 
           class="filter-btn" 
@@ -58,15 +56,15 @@ interface Artwork {
         </button>
       </div>
 
-      <!-- СЕТКА КАРТИН -->
       <div class="gallery-grid" *ngIf="filteredArtworks.length > 0; else emptyState">
         <div class="art-card" *ngFor="let art of filteredArtworks">
           
-          <div class="art-image-wrapper">
+          <div class="art-image-wrapper" (click)="openImageModal(art.image_url)">
             <img [src]="art.image_url || 'https://via.placeholder.com/600x400?text=Без+изображения'" [alt]="art.title">
             <span class="status-badge" [ngClass]="art.status.toLowerCase()">
               {{ getStatusText(art.status) }}
             </span>
+            <div class="zoom-hint">🔍 Увеличить</div>
           </div>
 
           <div class="art-info">
@@ -84,7 +82,6 @@ interface Artwork {
 
             <p class="description" *ngIf="art.description">{{ art.description }}</p>
 
-            <!-- Локация выставки, если картина на выставке -->
             <div class="exhibition-info" *ngIf="art.status === 'ON_EXHIBITION' && art.exhibition_location">
               📍 <strong>Экспонируется:</strong> {{ art.exhibition_location }}
             </div>
@@ -108,13 +105,19 @@ interface Artwork {
         </div>
       </div>
 
-      <!-- Пустое состояние -->
       <ng-template #emptyState>
         <div class="empty-message">
           <p>В данной категории пока нет картин.</p>
         </div>
       </ng-template>
 
+    </div>
+
+    <div class="lightbox-overlay" *ngIf="selectedImage" (click)="closeImageModal()">
+      <button class="lightbox-close" (click)="closeImageModal()">&times;</button>
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <img [src]="selectedImage" alt="Картина в полном размере">
+      </div>
     </div>
   `,
   styles: [`
@@ -189,6 +192,7 @@ interface Artwork {
       height: 280px;
       background: #f8f9fa;
       overflow: hidden;
+      cursor: pointer;
     }
     .art-image-wrapper img {
       width: 100%;
@@ -198,6 +202,25 @@ interface Artwork {
     }
     .art-card:hover .art-image-wrapper img {
       transform: scale(1.04);
+    }
+
+    /* Подсказка при наведении на картинку */
+    .zoom-hint {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .art-image-wrapper:hover .zoom-hint {
+      opacity: 1;
     }
 
     /* Бейджи статусов */
@@ -213,6 +236,7 @@ interface Artwork {
       letter-spacing: 0.05em;
       color: white;
       backdrop-filter: blur(4px);
+      z-index: 2;
     }
     .status-badge.available { background: rgba(16, 185, 129, 0.9); }
     .status-badge.on_exhibition { background: rgba(245, 158, 11, 0.9); }
@@ -284,6 +308,63 @@ interface Artwork {
       color: var(--text-muted);
       font-size: 1.1rem;
     }
+
+    /* ПОЛНОЭКРАННЫЙ ЛАЙТБОКС СТИЛИ */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.25s ease;
+      padding: 20px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 2.5rem;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 1001;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-close:hover {
+      opacity: 1;
+    }
+
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox-content img {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   `]
 })
 export class GalleryComponent implements OnInit {
@@ -291,6 +372,7 @@ export class GalleryComponent implements OnInit {
 
   artworks: Artwork[] = [];
   activeFilter: 'ALL' | 'AVAILABLE' | 'ON_EXHIBITION' | 'PRIVATE_COLLECTION' = 'ALL';
+  selectedImage: string | null = null;
 
   ngOnInit() {
     this.loadArtworks();
@@ -328,5 +410,22 @@ export class GalleryComponent implements OnInit {
 
   openBuyModal(art: Artwork) {
     alert(`Оформление заказа картины: "${art.title}" на сумму ${art.price} ₽.\n(Здесь подключается форма оплаты ЮKassa/Т-Банк)`);
+  }
+
+  // Методы открытия / закрытия полноэкранного просмотра
+  openImageModal(imageUrl: string) {
+    if (imageUrl) {
+      this.selectedImage = imageUrl;
+    }
+  }
+
+  closeImageModal() {
+    this.selectedImage = null;
+  }
+
+  // Закрытие по кнопке Escape
+  @HostListener('window:keydown.escape')
+  onEscapeKey() {
+    this.closeImageModal();
   }
 }

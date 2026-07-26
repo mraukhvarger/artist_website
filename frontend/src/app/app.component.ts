@@ -25,6 +25,21 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     <main>
       <router-outlet></router-outlet>
     </main>
+    
+    <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-info">
+            <h4>Мария Соловьева</h4>
+            <p>Персональная галерея живописи и графики.</p>
+          </div>
+          
+          <div class="footer-copy">
+            <p>&copy; {{ currentYear }} Мария Соловьева. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
   `
 })
-export class AppComponent {}
+export class AppComponent {
+  currentYear: number = new Date().getFullYear();
+}
